@@ -1,0 +1,39 @@
+app/
+├── main.py
+│
+├── api/
+│   ├── v1/
+│   │   └── router.py
+│   └── v2/
+│       └── router.py
+│
+├── modules/
+│   │
+│   ├── tasks/
+│   │   ├── create_task/
+│   │   │   ├── endpoint.py
+│   │   │   ├── handler.py
+│   │   │   ├── request.py
+│   │   │   └── response.py
+│   │   │
+│   │   ├── update_task/
+│   │   ├── delete_task/
+│   │   ├── get_task/
+│   │   └── list_tasks/
+│   │
+│   └── users/
+│       ├── create_user/
+│       ├── update_user/
+│       └── get_user/
+│
+├── infrastructure/
+│   ├── database/
+│   ├── repositories/
+│   ├── cache/
+│   └── messaging/
+│
+└── shared/
+    ├── auth/
+    ├── exceptions/
+    ├── dependencies/
+    └── utils/
