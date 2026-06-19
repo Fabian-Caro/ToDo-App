@@ -11,4 +11,6 @@ def execute(request: UpdateTaskRequest) -> UpdateTaskResponse | None:
 
     task["title"] = request.title
 
-    return UpdateTaskResponse(id=task["id"], title=task["title"])
+    return UpdateTaskResponse(
+        id=task["id"], title=task["title"], is_completed=task["is_completed"]
+    )
