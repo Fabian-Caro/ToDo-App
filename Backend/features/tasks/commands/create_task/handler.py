@@ -14,8 +14,10 @@ def execute(request: CreateTaskRequest) -> CreateTaskResponse:
 
     FAKE_DB["tasks"].append(task)
 
-    return CreateTaskResponse(
+    response = CreateTaskResponse(
         id=task["id"],  # type: ignore
         title=task["title"],  # type: ignore
         is_completed=task["is_completed"],  # type: ignore
     )
+
+    return response

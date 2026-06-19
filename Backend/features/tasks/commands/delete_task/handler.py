@@ -9,6 +9,10 @@ def execute(request: DeleteTaskRequest) -> DeleteTaskResponse | None:
     if task is None:
         return None
 
+    response = DeleteTaskResponse(
+        id=task["id"], title=task["title"], is_completed=task["is_completed"]
+    )
+
     FAKE_DB["tasks"].remove(task)
 
-    return DeleteTaskResponse(id=task["id"], title=task["title"])
+    return response

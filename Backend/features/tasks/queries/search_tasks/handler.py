@@ -19,4 +19,6 @@ def execute(request: SearchTaskRequest) -> SearchTaskResponse:
         for task in filtered_tasks
     ]
 
-    return SearchTaskResponse(results=results, total_results=len(results))
+    response = SearchTaskResponse(results=results, total_results=len(results))
+
+    return response

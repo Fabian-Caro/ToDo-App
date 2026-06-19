@@ -11,6 +11,8 @@ def execute(request: ToggleTaskRequest) -> ToggleTaskResponse | None:
 
     task["is_completed"] = not task["is_completed"]
 
-    return ToggleTaskResponse(
+    response = ToggleTaskResponse(
         id=task["id"], title=task["title"], is_completed=task["is_completed"]
     )
+
+    return response

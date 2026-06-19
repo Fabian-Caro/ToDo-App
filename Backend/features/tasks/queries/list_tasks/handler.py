@@ -7,4 +7,6 @@ def execute() -> ListTasksResponse:
 
     task_items = [TaskItem(**task) for task in raw_tasks]
 
-    return ListTasksResponse(tasks=task_items)
+    response = ListTasksResponse(tasks=task_items)
+
+    return response

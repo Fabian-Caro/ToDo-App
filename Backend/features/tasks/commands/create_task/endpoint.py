@@ -11,4 +11,5 @@ router = APIRouter()
 def create_task(
     request: CreateTaskRequest,
 ) -> CreateTaskResponse:
-    return execute(request)
+    response = execute(request)
+    return response
