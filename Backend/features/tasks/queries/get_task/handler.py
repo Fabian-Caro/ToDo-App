@@ -9,4 +9,6 @@ def execute(request: GetTaskRequest) -> GetTaskResponse | None:
     if task is None:
         return None
 
-    return GetTaskResponse(id=task["id"], title=task["title"])
+    return GetTaskResponse(
+        id=task["id"], title=task["title"], is_completed=task["is_completed"]
+    )
