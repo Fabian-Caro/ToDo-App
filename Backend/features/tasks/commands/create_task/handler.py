@@ -9,6 +9,7 @@ def execute(request: CreateTaskRequest) -> CreateTaskResponse:
     task = {
         "id": new_id,
         "title": request.title,
+        "is_completed": False,
     }
 
     FAKE_DB["tasks"].append(task)
@@ -16,4 +17,5 @@ def execute(request: CreateTaskRequest) -> CreateTaskResponse:
     return CreateTaskResponse(
         id=task["id"],  # type: ignore
         title=task["title"],  # type: ignore
+        is_completed=task["is_completed"],  # type: ignore
     )
