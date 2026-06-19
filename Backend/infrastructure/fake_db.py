@@ -2,8 +2,8 @@ from typing import Dict, List, Any
 
 FAKE_DB: Dict[str, List[Dict[str, Any]]] = {
     "tasks": [
-        {"id": 1, "title": "Aprender VSA"},
-        {"id": 2, "title": "Aprender CQRS"},
+        {"id": 1, "title": "Aprender VSA", "is_completed": False},
+        {"id": 2, "title": "Aprender CQRS", "is_completed": False},
     ]
 }
 
