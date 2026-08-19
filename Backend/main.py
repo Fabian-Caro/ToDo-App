@@ -15,12 +15,19 @@ app.add_middleware(
 
 app.include_router(v1_router, prefix="/api")
 
+base_url = "http://127.0.0.1:8000"
+
 ## CRUD
 
 
 @app.get("/")
 def root():
-    return {"Hello": "World!"}
+    return {
+        "Hello": "World!",
+        "links": {
+            "tasks": f"{base_url}/api/v1/tasks/"
+        }
+        }
 
 
 def main():
