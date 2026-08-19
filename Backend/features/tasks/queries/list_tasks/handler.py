@@ -3,15 +3,26 @@ from features.tasks.queries.list_tasks.response import ListTasksResponse, TaskIt
 from infrastructure.fake_db import FAKE_DB
 
 
-def execute(page: int, page_size: int) -> ListTasksResponse:
+def execute(
+    page: int, 
+    page_size: int,
+    is_completed: bool | None,
+) -> ListTasksResponse:
     raw_tasks = FAKE_DB["tasks"]
+    
+    if is_completed is not None:
+        raw_tasks = [
+            task
+            for task in raw_tasks
+            if task["is_completed"] == is_completed
+        ]
     
     total = len(raw_tasks)
     
-    start = (page - 1) * page_size
-    end = start + page_size
+    offset = (page - 1) * page_size
+    limit = page_size
     
-    paginated_tasks = raw_tasks[start:end]
+    paginated_tasks = raw_tasks[offset:offset + limit]
 
     task_items = [
         TaskItem(**task)
