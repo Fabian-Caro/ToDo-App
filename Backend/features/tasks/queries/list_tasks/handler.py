@@ -1,12 +1,23 @@
-from features.tasks.queries.list_tasks.response import ListTasksResponse, TaskItem, Pagination
+from typing import Literal
+
+from fastapi import Request
+
+from features.tasks.queries.list_tasks.response import ListTasksResponse, TaskItem, Pagination, PaginationLinks
 
 from infrastructure.fake_db import FAKE_DB
 
 
+def build_page_url(request: Request, page: int) -> str:
+    return str(request.url.include_query_params(page=page))
+
+
 def execute(
+    request: Request,
     page: int, 
     page_size: int,
     is_completed: bool | None,
+    sort_by: Literal["id", "title"],
+    sort_order: Literal["asc", "desc"],
 ) -> ListTasksResponse:
     raw_tasks = FAKE_DB["tasks"]
     
@@ -16,13 +27,18 @@ def execute(
             for task in raw_tasks
             if task["is_completed"] == is_completed
         ]
+        
+    raw_tasks = sorted(
+        raw_tasks,
+        key=lambda task: (task[sort_by], task["id"]),
+        reverse=sort_order == "desc",
+    )
     
     total = len(raw_tasks)
     
     offset = (page - 1) * page_size
-    limit = page_size
     
-    paginated_tasks = raw_tasks[offset:offset + limit]
+    paginated_tasks = raw_tasks[offset:offset + page_size]
 
     task_items = [
         TaskItem(**task)
@@ -36,6 +52,22 @@ def execute(
     
     next_page = page + 1 if has_next else None
     previous_page = page - 1 if has_previous else None
+    
+    links = PaginationLinks(
+        self=build_page_url(request, page),
+        first=build_page_url(request, 1),
+        previous=(
+            build_page_url(request, previous_page)
+            if previous_page is not None
+            else None
+        ),
+        next=(
+            build_page_url(request, next_page)
+            if next_page is not None
+            else None
+        ),
+        last=build_page_url(request, total_pages or 1),
+    )
 
     return ListTasksResponse(
         tasks=task_items,
@@ -48,5 +80,6 @@ def execute(
             has_previous=has_previous,
             next_page=next_page,
             previous_page=previous_page,
+            links=links,
         ),
     )
