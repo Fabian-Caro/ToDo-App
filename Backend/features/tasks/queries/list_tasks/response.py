@@ -1,9 +1,13 @@
 from pydantic import BaseModel
 
+class TaskLinks(BaseModel):
+    self: str
+
 class TaskItem(BaseModel):
     id: int
     title: str
     is_completed: bool
+    links: TaskLinks
     
 class PaginationLinks(BaseModel):
     self: str

@@ -2,10 +2,19 @@ from typing import Literal
 
 from fastapi import Request
 
-from features.tasks.queries.list_tasks.response import ListTasksResponse, TaskItem, Pagination, PaginationLinks
+from features.tasks.queries.list_tasks.response import (
+    ListTasksResponse, 
+    TaskItem, 
+    Pagination, 
+    PaginationLinks,
+    TaskLinks,
+)
 
 from infrastructure.fake_db import FAKE_DB
 
+
+def build_task_url(request: Request, task_id: int) -> str:
+    return str(request.url_for("get_task", task_id=task_id))
 
 def build_page_url(request: Request, page: int) -> str:
     return str(request.url.include_query_params(page=page))
@@ -41,7 +50,12 @@ def execute(
     paginated_tasks = raw_tasks[offset:offset + page_size]
 
     task_items = [
-        TaskItem(**task)
+        TaskItem(
+            **task,
+            links=TaskLinks(
+                self=build_task_url(request, task["id"]),
+            ),
+        )
         for task in paginated_tasks
     ]
     

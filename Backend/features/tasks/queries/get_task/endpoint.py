@@ -7,7 +7,7 @@ from features.tasks.queries.get_task.handler import execute
 router = APIRouter()
 
 
-@router.get("/{task_id}", response_model=GetTaskResponse)
+@router.get("/{task_id}", response_model=GetTaskResponse, name="get_task")
 def get_task(task_id: int) -> GetTaskResponse | None:
     request = GetTaskRequest(id=task_id)
     response = execute(request)
