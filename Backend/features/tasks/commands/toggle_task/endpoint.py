@@ -7,7 +7,9 @@ from features.tasks.commands.toggle_task.response import ToggleTaskResponse
 router = APIRouter()
 
 
-@router.patch("/{task_id}/toggle", response_model=ToggleTaskResponse)
+@router.patch(
+    "/{task_id}/toggle", response_model=ToggleTaskResponse, name="toggle_task"
+)
 def toggle_task(task_id: int):
     request = ToggleTaskRequest(id=task_id)
     response = execute(request)

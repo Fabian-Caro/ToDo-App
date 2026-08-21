@@ -10,7 +10,7 @@ from features.tasks.commands.update_task.response import UpdateTaskResponse
 router = APIRouter()
 
 
-@router.put("/{task_id}", response_model=UpdateTaskResponse)
+@router.put("/{task_id}", response_model=UpdateTaskResponse, name="update_task")
 def update_task(task_id: int, payload: UpdateTaskPayload) -> UpdateTaskResponse | None:
     request = UpdateTaskRequest(id=task_id, title=payload.title)
     response = execute(request)
