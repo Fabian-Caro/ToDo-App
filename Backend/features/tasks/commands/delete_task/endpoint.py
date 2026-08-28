@@ -7,7 +7,7 @@ from features.tasks.commands.delete_task.response import DeleteTaskResponse
 router = APIRouter()
 
 
-@router.delete("/{task_id}", response_model=DeleteTaskResponse)
+@router.delete("/{task_id}", response_model=DeleteTaskResponse, name="delete_task")
 def delete_task(task_id: int) -> DeleteTaskResponse | None:
     request = DeleteTaskRequest(id=task_id)
     response = execute(request)

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 
 from features.tasks.commands.update_task.handler import execute
 from features.tasks.commands.update_task.request import (
@@ -10,11 +10,20 @@ from features.tasks.commands.update_task.response import UpdateTaskResponse
 router = APIRouter()
 
 
-@router.put("/{task_id}", response_model=UpdateTaskResponse)
-def update_task(task_id: int, payload: UpdateTaskPayload) -> UpdateTaskResponse | None:
-    request = UpdateTaskRequest(id=task_id, title=payload.title)
-    response = execute(request)
-
+@router.put("/{task_id}", response_model=UpdateTaskResponse, name="update_task")
+def update_task(
+    request:Request,
+    task_id: int,
+    payload: UpdateTaskPayload
+) -> UpdateTaskResponse | None:
+    update_task_request = UpdateTaskRequest(
+        id=task_id,
+        title=payload.title,
+        is_completed=payload.is_completed,
+    )
+    
+    response = execute(request, update_task_request)
+    
     if response is None:
         raise HTTPException(status_code=404, detail="Task not found")
 
