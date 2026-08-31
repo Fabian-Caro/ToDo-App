@@ -60,7 +60,7 @@ Las ramas permanentes son:
 
 Ramas temporales:
 
-- `feature/<nombre>`: nuevas funcionalidades; nacen de `develop` y vuelven a `develop`.
+- `feat/<nombre>`: nuevas funcionalidades; nacen de `develop` y vuelven a `develop`.
 - `release/<version>`: preparación de una versión; nace de `develop` y se integra en `main` y `develop`.
 - `hotfix/<nombre>`: correcciones urgentes; nacen de `main` y se integran en `main` y `develop`.
 - `docs/<nombre>`: cambios exclusivamente documentales; nacen de `develop`.
@@ -68,5 +68,5 @@ Ramas temporales:
 La migración inicial puede desarrollarse en:
 
 ```text
-feature/sqlite-migration
+feat/sqlite-migration
 ```
