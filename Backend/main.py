@@ -1,5 +1,5 @@
 from api.v1.router import router as v1_router
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -14,12 +14,17 @@ app.add_middleware(
 
 app.include_router(v1_router, prefix="/api")
 
-BASE_URL = "http://127.0.0.1:8000"
-
 
 @app.get("/")
-def root():
-    return {"Hello": "World!", "links": {"tasks": f"{BASE_URL}/api/v1/tasks/"}}
+def root(request: Request):
+    base_url = str(request.base_url).rstrip("/")
+    return {
+        "Hello": "World!",
+        "message": "API",
+        "links": {
+            "tasks": f"{base_url}/api/v1/tasks/",
+        },
+    }
 
 
 def main():
