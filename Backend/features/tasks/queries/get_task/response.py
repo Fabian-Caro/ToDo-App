@@ -1,17 +1,6 @@
 from pydantic import BaseModel
 
-
-class Link(BaseModel):
-    href: str
-    method: str
-
-
-class TaskLinks(BaseModel):
-    self: Link
-    collection: Link
-    update: Link
-    toggle_completation: Link
-    delete: Link
+from features.tasks.shared.links import TaskLinks
 
 
 class GetTaskResponse(BaseModel):

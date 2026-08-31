@@ -12,8 +12,8 @@ class Link(BaseModel):
 class TaskLinks(BaseModel):
     self: Link
     collection: Link
-    update: Link
-    toggle_completation: Link
+    replace: Link
+    patch: Link
     delete: Link
 
 
@@ -27,12 +27,12 @@ def build_task_links(request: Request, task_id: int) -> TaskLinks:
             href=str(request.url_for("list_tasks")),
             method="GET",
         ),
-        update=Link(
+        replace=Link(
             href=str(request.url_for("update_task", task_id=task_id)),
             method="PUT",
         ),
-        toggle_completation=Link(
-            href=str(request.url_for("toggle_task", task_id=task_id)),
+        patch=Link(
+            href=str(request.url_for("patch_task", task_id=task_id)),
             method="PATCH",
         ),
         delete=Link(
