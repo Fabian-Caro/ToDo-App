@@ -8,6 +8,7 @@ from features.tasks.queries.list_tasks.response import (
     TaskItem,
     TaskLinks,
 )
+from features.tasks.shared.repository import TaskRepository
 from infrastructure.fake_db import FAKE_DB
 
 
@@ -19,6 +20,9 @@ def build_page_url(request: Request, page: int) -> str:
     return str(request.url.include_query_params(page=page))
 
 
+repository = TaskRepository()
+
+
 def execute(
     request: Request,
     page: int,
@@ -27,7 +31,7 @@ def execute(
     sort_by: Literal["id", "title"],
     sort_order: Literal["asc", "desc"],
 ) -> ListTasksResponse:
-    raw_tasks = FAKE_DB["tasks"]
+    raw_tasks = repository.list()
 
     if is_completed is not None:
         raw_tasks = [task for task in raw_tasks if task["is_completed"] == is_completed]
@@ -42,7 +46,7 @@ def execute(
 
     offset = (page - 1) * page_size
 
-    paginated_tasks = raw_tasks[offset:offset + page_size]
+    paginated_tasks = raw_tasks[offset : offset + page_size]
 
     task_items = [
         TaskItem(

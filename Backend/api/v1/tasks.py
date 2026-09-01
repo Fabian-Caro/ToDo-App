@@ -13,7 +13,6 @@ router = APIRouter(prefix="/tasks", tags=["TASKS"])
 
 router.include_router(create_task_router)
 router.include_router(update_task_router)
-router.include_router(toggle_task_router)
 router.include_router(delete_task_router)
 router.include_router(search_tasks_router)
 router.include_router(get_task_router)

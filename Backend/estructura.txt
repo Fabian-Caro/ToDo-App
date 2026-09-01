@@ -1,36 +1,61 @@
-app/
+Backend/
 ├── main.py
 │
 ├── api/
 │   ├── v1/
 │   │   └── router.py
+│   │   └── tasks.py
 │   └── v2/
 │       └── router.py
 │
-├── modules/
+├── features/
 │   │
 │   ├── tasks/
-│   │   ├── create_task/
-│   │   │   ├── endpoint.py
-│   │   │   ├── handler.py
-│   │   │   ├── request.py
-│   │   │   └── response.py
-│   │   │
-│   │   ├── update_task/
-│   │   ├── delete_task/
-│   │   ├── get_task/
-│   │   └── list_tasks/
-│   │
-│   └── users/
-│       ├── create_user/
-│       ├── update_user/
-│       └── get_user/
-│
+│   │   ├── commands/
+│   │   │   ├── create_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   │   ├── delete_task_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   │   ├── patch_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   │   ├── update_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   ├── queries/
+│   │   │   ├── get_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   │   ├── list_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   └── response.py
+│   │   │   ├── search_task/
+|   │   │   │   ├── endpoint.py
+|   │   │   │   ├── handler.py
+|   │   │   │   ├── request.py
+|   │   │   │   └── response.py
+│   │   ├── shared/
+│   │   │   ├── links.py
+│   ├── users/
 ├── infrastructure/
 │   ├── database/
 │   ├── repositories/
 │   ├── cache/
 │   └── messaging/
+│   └── fake_db.py
 │
 └── shared/
     ├── auth/

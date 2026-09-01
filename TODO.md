@@ -2,7 +2,7 @@
 
 ## Repositorio y flujo de trabajo
 
-- [ ] Crear el repositorio remoto.
+- [x] Crear el repositorio remoto.
 - [ ] Añadir `README.md` y `TODO.md`.
 - [ ] Crear la rama `develop` desde `main`.
 - [ ] Configurar `main` y `develop` como ramas base.
