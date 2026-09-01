@@ -1,4 +1,4 @@
-from infrastructure.fake_db import FAKE_DB, get_next_id
+from infrastructure.database.fake_db import FAKE_DB, get_next_id
 
 
 class TaskRepository:

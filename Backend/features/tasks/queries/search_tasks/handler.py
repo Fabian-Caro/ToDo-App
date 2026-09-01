@@ -8,7 +8,7 @@ from features.tasks.queries.search_tasks.response import (
     SearchTaskResponse,
     TaskLinks,
 )
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.fake_db import FAKE_DB
 
 
 def build_page_url(request: Request, page: int) -> str:

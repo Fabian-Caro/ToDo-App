@@ -9,7 +9,7 @@ from features.tasks.queries.list_tasks.response import (
     TaskLinks,
 )
 from features.tasks.shared.repository import TaskRepository
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.fake_db import FAKE_DB
 
 
 def build_task_url(request: Request, task_id: int) -> str:

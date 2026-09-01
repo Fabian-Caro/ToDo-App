@@ -3,18 +3,15 @@ from fastapi import Request
 from features.tasks.commands.patch_task.request import PatchTaskRequest
 from features.tasks.commands.patch_task.response import PatchTaskResponse
 from features.tasks.shared.links import build_task_links
-from features.tasks.shared.repository import TaskRepository
-from infrastructure.fake_db import FAKE_DB
-
-
-repository = TaskRepository()
+from infrastructure.database.unit_of_work import UnitOfWork
 
 
 def execute(
     request: Request,
     patch_task_request: PatchTaskRequest,
 ) -> PatchTaskResponse | None:
-    task = repository.get_by_id(patch_task_request.id)
+    uow = UnitOfWork()
+    task = uow.tasks.get_by_id(patch_task_request.id)
 
     if task is None:
         return None
@@ -25,7 +22,8 @@ def execute(
     if patch_task_request.is_completed is not None:
         task["is_completed"] = patch_task_request.is_completed
 
-    repository.save(task)
+    uow.tasks.save(task)
+    uow.commit()
 
     return PatchTaskResponse(
         id=task["id"],

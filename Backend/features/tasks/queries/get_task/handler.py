@@ -3,7 +3,7 @@ from features.tasks.queries.get_task.request import GetTaskRequest
 from features.tasks.queries.get_task.response import GetTaskResponse
 from features.tasks.shared.links import build_task_links
 from features.tasks.shared.repository import TaskRepository
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.fake_db import FAKE_DB
 
 repository = TaskRepository()
 

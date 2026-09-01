@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from features.tasks.commands.create_task.endpoint import router as create_task_router
 from features.tasks.commands.delete_task.endpoint import router as delete_task_router
-from features.tasks.commands.toggle_task.endpoint import router as toggle_task_router
 from features.tasks.commands.update_task.endpoint import router as update_task_router
 from features.tasks.commands.patch_task.endpoint import router as patch_task_router
 from features.tasks.queries.get_task.endpoint import router as get_task_router
