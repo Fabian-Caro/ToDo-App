@@ -1,35 +1,33 @@
-from infrastructure.database.fake_db import FAKE_DB, get_next_id
+from infrastructure.database.models.task import Task
+from sqlmodel import Session, select
 
 
 class TaskRepository:
-    def create(self, title: str) -> dict:
-        task = {
-            "id": get_next_id("tasks"),
-            "title": title,
-            "is_completed": False,
-        }
+    def __init__(self, session: Session):
+        self.session = session
 
-        FAKE_DB["tasks"].append(task)
+    def create(self, title: str) -> Task:
+        task = Task(title=title)
+
+        self.session.add(task)
+        self.session.flush()
+        self.session.refresh(task)
 
         return task
 
-    def get_by_id(self, task_id: int) -> dict | None:
-        return next(
-            (task for task in FAKE_DB["tasks"] if task["id"] == task_id),
-            None,
-        )
+    def get_by_id(self, task_id: int) -> Task | None:
+        return self.session.get(Task, task_id)
 
-    def list(self) -> list[dict]:
-        return FAKE_DB["tasks"].copy()
+    def list(self) -> list[Task]:
+        statement = select(Task)
+        return list(self.session.exec(statement))
 
-    def save(self, task: dict) -> dict:
-        for index, current_task in enumerate(FAKE_DB["tasks"]):
-            if current_task["id"] == task["id"]:
-                FAKE_DB["tasks"][index] = task
-                return task
+    def save(self, task: Task) -> Task:
+        self.session.add(task)
+        self.session.flush()
+        self.session.refresh(task)
 
-        raise ValueError(f"Task with id {task['id']} not found.")
+        return task
 
-    def delete(self, task: dict) -> None:
-        FAKE_DB["tasks"].remove(task)
-        
+    def delete(self, task: Task) -> None:
+        self.session.delete(task)

@@ -9,13 +9,16 @@ def execute(
     request: Request,
     create_task_request: CreateTaskRequest,
 ) -> CreateTaskResponse:
-    uow = UnitOfWork()
-    task = uow.tasks.create(create_task_request.title)
-    uow.commit()
 
-    return CreateTaskResponse(
-        id=task["id"],
-        title=task["title"],
-        is_completed=task["is_completed"],
-        links=build_task_links(request, task["id"]),
-    )
+    with UnitOfWork() as uow:
+        task = uow.tasks.create(create_task_request.title)
+        uow.commit()
+
+        assert task.id is not None
+
+        return CreateTaskResponse(
+            id=task.id,
+            title=task.title,
+            is_completed=task.is_completed,
+            links=build_task_links(request, task.id),
+        )
