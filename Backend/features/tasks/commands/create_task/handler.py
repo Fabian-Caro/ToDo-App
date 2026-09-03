@@ -8,17 +8,17 @@ from infrastructure.database.unit_of_work import UnitOfWork
 def execute(
     request: Request,
     create_task_request: CreateTaskRequest,
+    uow: UnitOfWork,
 ) -> CreateTaskResponse:
 
-    with UnitOfWork() as uow:
-        task = uow.tasks.create(create_task_request.title)
-        uow.commit()
+    task = uow.tasks.create(create_task_request.title)
+    uow.commit()
 
-        assert task.id is not None
+    assert task.id is not None
 
-        return CreateTaskResponse(
-            id=task.id,
-            title=task.title,
-            is_completed=task.is_completed,
-            links=build_task_links(request, task.id),
-        )
+    return CreateTaskResponse(
+        id=task.id,
+        title=task.title,
+        is_completed=task.is_completed,
+        links=build_task_links(request, task.id),
+    )

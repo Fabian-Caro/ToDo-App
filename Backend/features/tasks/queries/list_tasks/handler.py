@@ -21,6 +21,7 @@ def build_page_url(request: Request, page: int) -> str:
 
 def execute(
     request: Request,
+    uow: UnitOfWork,
     page: int,
     page_size: int,
     is_completed: bool | None,
@@ -28,72 +29,67 @@ def execute(
     sort_order: Literal["asc", "desc"],
 ) -> ListTasksResponse:
 
-    with UnitOfWork() as uow:
-        raw_tasks = uow.tasks.list()
+    raw_tasks = uow.tasks.list()
 
-        if is_completed is not None:
-            raw_tasks = [
-                task for task in raw_tasks if task.is_completed == is_completed
-            ]
+    if is_completed is not None:
+        raw_tasks = [task for task in raw_tasks if task.is_completed == is_completed]
 
-        raw_tasks = sorted(
-            raw_tasks,
-            key=lambda task: (getattr(task, sort_by), task.id),
-            reverse=sort_order == "desc",
-        )
+    raw_tasks = sorted(
+        raw_tasks,
+        key=lambda task: (getattr(task, sort_by), task.id),
+        reverse=sort_order == "desc",
+    )
 
-        total = len(raw_tasks)
+    total = len(raw_tasks)
 
-        offset = (page - 1) * page_size
+    offset = (page - 1) * page_size
 
-        paginated_tasks = raw_tasks[offset : offset + page_size]
+    paginated_tasks = raw_tasks[offset : offset + page_size]
 
-        task_items = [
-            TaskItem(
-                id=task.id,
-                title=task.title,
-                is_completed=task.is_completed,
-                links=TaskLinks(
-                    self=build_task_url(request, task.id),
-                ),
-            )
-            for task in paginated_tasks
-            if task.id is not None
-        ]
-
-        total_pages = (total + page_size - 1) // page_size
-
-        has_next = page < total_pages
-        has_previous = page > 1
-
-        next_page = page + 1 if has_next else None
-        previous_page = page - 1 if has_previous else None
-
-        links = PaginationLinks(
-            self=build_page_url(request, page),
-            first=build_page_url(request, 1),
-            previous=(
-                build_page_url(request, previous_page)
-                if previous_page is not None
-                else None
-            ),
-            next=(
-                build_page_url(request, next_page) if next_page is not None else None
-            ),
-            last=build_page_url(request, total_pages or 1),
-        )
-
-        return ListTasksResponse(
-            tasks=task_items,
-            pagination=Pagination(
-                page=page,
-                page_size=page_size,
-                total=total,
-                total_pages=total_pages,
-                has_next=has_next,
-                has_previous=has_previous,
-                next_page=next_page,
-                previous_page=previous_page,
-                links=links,
+    task_items = [
+        TaskItem(
+            id=task.id,
+            title=task.title,
+            is_completed=task.is_completed,
+            links=TaskLinks(
+                self=build_task_url(request, task.id),
             ),
         )
+        for task in paginated_tasks
+        if task.id is not None
+    ]
+
+    total_pages = (total + page_size - 1) // page_size
+
+    has_next = page < total_pages
+    has_previous = page > 1
+
+    next_page = page + 1 if has_next else None
+    previous_page = page - 1 if has_previous else None
+
+    links = PaginationLinks(
+        self=build_page_url(request, page),
+        first=build_page_url(request, 1),
+        previous=(
+            build_page_url(request, previous_page)
+            if previous_page is not None
+            else None
+        ),
+        next=(build_page_url(request, next_page) if next_page is not None else None),
+        last=build_page_url(request, total_pages or 1),
+    )
+
+    return ListTasksResponse(
+        tasks=task_items,
+        pagination=Pagination(
+            page=page,
+            page_size=page_size,
+            total=total,
+            total_pages=total_pages,
+            has_next=has_next,
+            has_previous=has_previous,
+            next_page=next_page,
+            previous_page=previous_page,
+            links=links,
+        ),
+    )

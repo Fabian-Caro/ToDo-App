@@ -1,8 +1,11 @@
-from typing import Literal
-from fastapi import APIRouter, Query, Request
+from typing import Literal, Annotated
+
+from fastapi import APIRouter, Query, Request, Depends
 from features.tasks.queries.search_tasks.handler import execute
 from features.tasks.queries.search_tasks.request import SearchTaskRequest
 from features.tasks.queries.search_tasks.response import SearchTaskResponse
+from infrastructure.database.dependencies import get_uow
+from infrastructure.database.unit_of_work import UnitOfWork
 
 router = APIRouter()
 
@@ -10,6 +13,7 @@ router = APIRouter()
 @router.get("/search", response_model=SearchTaskResponse, name="search_tasks")
 def search_tasks(
     request: Request,
+    uow: Annotated[UnitOfWork, Depends(get_uow)],
     q: str = Query(..., description="Término de búsqueda"),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=10, ge=1, le=100),
@@ -26,4 +30,4 @@ def search_tasks(
         sort_order=sort_order,
     )
 
-    return execute(request, search_request)
+    return execute(request, search_request, uow)

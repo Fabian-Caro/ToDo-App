@@ -6,26 +6,27 @@ from infrastructure.database.unit_of_work import UnitOfWork
 
 
 def execute(
-    request: Request, update_task_request: UpdateTaskRequest
+    request: Request,
+    update_task_request: UpdateTaskRequest,
+    uow: UnitOfWork,
 ) -> UpdateTaskResponse | None:
 
-    with UnitOfWork() as uow:
-        task = uow.tasks.get_by_id(update_task_request.id)
+    task = uow.tasks.get_by_id(update_task_request.id)
 
-        if task is None:
-            return None
+    if task is None:
+        return None
 
-        task.title = update_task_request.title
-        task.is_completed = update_task_request.is_completed
+    task.title = update_task_request.title
+    task.is_completed = update_task_request.is_completed
 
-        uow.tasks.save(task)
-        uow.commit()
+    uow.tasks.save(task)
+    uow.commit()
 
-        assert task.id is not None
+    assert task.id is not None
 
-        return UpdateTaskResponse(
-            id=task.id,
-            title=task.title,
-            is_completed=task.is_completed,
-            links=build_task_links(request, task.id),
-        )
+    return UpdateTaskResponse(
+        id=task.id,
+        title=task.title,
+        is_completed=task.is_completed,
+        links=build_task_links(request, task.id),
+    )

@@ -21,79 +21,76 @@ def build_task_url(request: Request, task_id: int) -> str:
 def execute(
     request: Request,
     search_request: SearchTaskRequest,
+    uow: UnitOfWork,
 ) -> SearchTaskResponse:
 
-    with UnitOfWork() as uow:
+    search_term = search_request.query.lower()
 
-        search_term = search_request.query.lower()
+    filtered_tasks = [
+        task for task in uow.tasks.list() if search_term in task.title.lower()
+    ]
 
+    if search_request.is_completed is not None:
         filtered_tasks = [
-            task for task in uow.tasks.list() if search_term in task.title.lower()
+            task
+            for task in filtered_tasks
+            if task.is_completed == search_request.is_completed
         ]
 
-        if search_request.is_completed is not None:
-            filtered_tasks = [
-                task
-                for task in filtered_tasks
-                if task.is_completed == search_request.is_completed
-            ]
+    filtered_tasks = sorted(
+        filtered_tasks,
+        key=lambda task: (getattr(task, search_request.sort_by), task.id),
+        reverse=search_request.sort_order == "desc",
+    )
 
-        filtered_tasks = sorted(
-            filtered_tasks,
-            key=lambda task: (getattr(task, search_request.sort_by), task.id),
-            reverse=search_request.sort_order == "desc",
-        )
+    total = len(filtered_tasks)
+    offset = (search_request.page - 1) * search_request.page_size
+    paginated_task = filtered_tasks[offset : offset + search_request.page_size]
 
-        total = len(filtered_tasks)
-        offset = (search_request.page - 1) * search_request.page_size
-        paginated_task = filtered_tasks[offset : offset + search_request.page_size]
+    total_page = (total + search_request.page_size - 1) // search_request.page_size
 
-        total_page = (total + search_request.page_size - 1) // search_request.page_size
+    has_next = search_request.page < total_page
+    has_previous = search_request.page > 1
 
-        has_next = search_request.page < total_page
-        has_previous = search_request.page > 1
+    next_page = search_request.page + 1 if has_next else None
+    previous_page = search_request.page - 1 if has_previous else None
 
-        next_page = search_request.page + 1 if has_next else None
-        previous_page = search_request.page - 1 if has_previous else None
-
-        results = [
-            SearchTaskItem(
-                id=task.id,
-                title=task.title,
-                is_completed=task.is_completed,
-                links=TaskLinks(
-                    self=build_task_url(request, task.id),
-                ),
-            )
-            for task in paginated_task
-            if task.id is not None
-        ]
-
-        links = PaginationLinks(
-            self=build_page_url(request, search_request.page),
-            first=build_page_url(request, 1),
-            previous=(
-                build_page_url(request, previous_page)
-                if previous_page is not None
-                else None
-            ),
-            next=(
-                build_page_url(request, next_page) if next_page is not None else None
-            ),
-            last=build_page_url(request, total_page or 1),
-        )
-
-        return SearchTaskResponse(
-            results=results,
-            pagination=Pagination(
-                page=search_request.page,
-                page_size=search_request.page_size,
-                total=total,
-                total_pages=total_page,
-                has_next=has_next,
-                has_previous=has_previous,
-                next_page=next_page,
-                previous_page=previous_page,
-                links=links,
+    results = [
+        SearchTaskItem(
+            id=task.id,
+            title=task.title,
+            is_completed=task.is_completed,
+            links=TaskLinks(
+                self=build_task_url(request, task.id),
             ),
         )
+        for task in paginated_task
+        if task.id is not None
+    ]
+
+    links = PaginationLinks(
+        self=build_page_url(request, search_request.page),
+        first=build_page_url(request, 1),
+        previous=(
+            build_page_url(request, previous_page)
+            if previous_page is not None
+            else None
+        ),
+        next=(build_page_url(request, next_page) if next_page is not None else None),
+        last=build_page_url(request, total_page or 1),
+    )
+
+    return SearchTaskResponse(
+        results=results,
+        pagination=Pagination(
+            page=search_request.page,
+            page_size=search_request.page_size,
+            total=total,
+            total_pages=total_page,
+            has_next=has_next,
+            has_previous=has_previous,
+            next_page=next_page,
+            previous_page=previous_page,
+            links=links,
+        ),
+    )

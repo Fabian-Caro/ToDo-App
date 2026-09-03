@@ -8,19 +8,19 @@ from infrastructure.database.unit_of_work import UnitOfWork
 def execute(
     request: Request,
     get_task_request: GetTaskRequest,
+    uow: UnitOfWork,
 ) -> GetTaskResponse | None:
 
-    with UnitOfWork() as uow:
-        task = uow.tasks.get_by_id(get_task_request.id)
+    task = uow.tasks.get_by_id(get_task_request.id)
 
-        if task is None:
-            return None
+    if task is None:
+        return None
 
-        assert task.id is not None
+    assert task.id is not None
 
-        return GetTaskResponse(
-            id=task.id,
-            title=task.title,
-            is_completed=task.is_completed,
-            links=build_task_links(request, task.id),
-        )
+    return GetTaskResponse(
+        id=task.id,
+        title=task.title,
+        is_completed=task.is_completed,
+        links=build_task_links(request, task.id),
+    )
