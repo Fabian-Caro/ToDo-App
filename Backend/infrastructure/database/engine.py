@@ -1,9 +1,8 @@
+from core.settings import settings
 from sqlmodel import create_engine
 
-DATABASE_URL = "sqlite:///tasks.db"
-
 engine = create_engine(
-    DATABASE_URL,
+    settings.database_url,
     echo=True,
     connect_args={"check_same_thread": False},
 )

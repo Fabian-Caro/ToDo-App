@@ -5,3 +5,4 @@ Backend/env/
 **/*.pyc
 tasks.db
 *.db
+.env
