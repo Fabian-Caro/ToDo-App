@@ -1,14 +1,16 @@
+from contextlib import asynccontextmanager
+
 from api.v1.router import router as v1_router
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from contextlib import asynccontextmanager
-from infrastructure.database.init_db import init_db
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    print("Iniciando servidor...")
+    # init_db()
     yield
+    print("Apagando servidor...")
 
 
 app = FastAPI(lifespan=lifespan)
