@@ -1,5 +1,4 @@
 from fastapi import Request
-
 from features.tasks.queries.search_tasks.request import SearchTaskRequest
 from features.tasks.queries.search_tasks.response import (
     Pagination,
@@ -8,7 +7,7 @@ from features.tasks.queries.search_tasks.response import (
     SearchTaskResponse,
     TaskLinks,
 )
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.unit_of_work import UnitOfWork
 
 
 def build_page_url(request: Request, page: int) -> str:
@@ -22,23 +21,25 @@ def build_task_url(request: Request, task_id: int) -> str:
 def execute(
     request: Request,
     search_request: SearchTaskRequest,
+    uow: UnitOfWork,
 ) -> SearchTaskResponse:
+
     search_term = search_request.query.lower()
 
     filtered_tasks = [
-        task for task in FAKE_DB["tasks"] if search_term in task["title"].lower()
+        task for task in uow.tasks.list() if search_term in task.title.lower()
     ]
 
     if search_request.is_completed is not None:
         filtered_tasks = [
             task
             for task in filtered_tasks
-            if task["is_completed"] == search_request.is_completed
+            if task.is_completed == search_request.is_completed
         ]
 
     filtered_tasks = sorted(
         filtered_tasks,
-        key=lambda task: (task[search_request.sort_by], task["id"]),
+        key=lambda task: (getattr(task, search_request.sort_by), task.id),
         reverse=search_request.sort_order == "desc",
     )
 
@@ -56,12 +57,15 @@ def execute(
 
     results = [
         SearchTaskItem(
-            **task,
+            id=task.id,
+            title=task.title,
+            is_completed=task.is_completed,
             links=TaskLinks(
-                self=build_task_url(request, task["id"]),
+                self=build_task_url(request, task.id),
             ),
         )
         for task in paginated_task
+        if task.id is not None
     ]
 
     links = PaginationLinks(

@@ -1,8 +1,19 @@
+from contextlib import asynccontextmanager
+
 from api.v1.router import router as v1_router
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Iniciando servidor...")
+    # init_db()
+    yield
+    print("Apagando servidor...")
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

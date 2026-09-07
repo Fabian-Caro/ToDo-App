@@ -1,16 +1,18 @@
 from features.tasks.commands.delete_task.request import DeleteTaskRequest
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.unit_of_work import UnitOfWork
 
 
-def execute(delete_task_request: DeleteTaskRequest) -> bool:
-    task = next(
-        (task for task in FAKE_DB["tasks"] if task["id"] == delete_task_request.id),
-        None,
-    )
+def execute(
+    delete_task_request: DeleteTaskRequest,
+    uow: UnitOfWork,
+) -> bool:
+
+    task = uow.tasks.get_by_id(delete_task_request.id)
 
     if task is None:
         return False
 
-    FAKE_DB["tasks"].remove(task)
+    uow.tasks.delete(task)
+    uow.commit()
 
     return True

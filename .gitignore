@@ -3,3 +3,6 @@ Backend/venv/
 Backend/env/
 **/__pycache__/
 **/*.pyc
+tasks.db
+*.db
+.env

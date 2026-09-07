@@ -8,7 +8,7 @@ from features.tasks.queries.list_tasks.response import (
     TaskItem,
     TaskLinks,
 )
-from infrastructure.fake_db import FAKE_DB
+from infrastructure.database.unit_of_work import UnitOfWork
 
 
 def build_task_url(request: Request, task_id: int) -> str:
@@ -21,20 +21,22 @@ def build_page_url(request: Request, page: int) -> str:
 
 def execute(
     request: Request,
+    uow: UnitOfWork,
     page: int,
     page_size: int,
     is_completed: bool | None,
     sort_by: Literal["id", "title"],
     sort_order: Literal["asc", "desc"],
 ) -> ListTasksResponse:
-    raw_tasks = FAKE_DB["tasks"]
+
+    raw_tasks = uow.tasks.list()
 
     if is_completed is not None:
-        raw_tasks = [task for task in raw_tasks if task["is_completed"] == is_completed]
+        raw_tasks = [task for task in raw_tasks if task.is_completed == is_completed]
 
     raw_tasks = sorted(
         raw_tasks,
-        key=lambda task: (task[sort_by], task["id"]),
+        key=lambda task: (getattr(task, sort_by), task.id),
         reverse=sort_order == "desc",
     )
 
@@ -42,16 +44,19 @@ def execute(
 
     offset = (page - 1) * page_size
 
-    paginated_tasks = raw_tasks[offset:offset + page_size]
+    paginated_tasks = raw_tasks[offset : offset + page_size]
 
     task_items = [
         TaskItem(
-            **task,
+            id=task.id,
+            title=task.title,
+            is_completed=task.is_completed,
             links=TaskLinks(
-                self=build_task_url(request, task["id"]),
+                self=build_task_url(request, task.id),
             ),
         )
         for task in paginated_tasks
+        if task.id is not None
     ]
 
     total_pages = (total + page_size - 1) // page_size
